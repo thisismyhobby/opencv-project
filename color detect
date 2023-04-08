@@ -1,0 +1,53 @@
+# opencv-project
+
+
+import cv2
+
+cap = cv2.VideoCapture(0)
+# sets / modifies the resolution of the frame
+cap.set(cv2.CAP_PROP_FRAME_WIDTH,1280) 
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT,720) 
+while True :
+
+        success,frame = cap.read()
+        hsv_frame = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
+
+    # to find the centre position of the frame in the form of 
+    #  value == (cx,cy)
+        height,width,_= frame.shape #gives the dimension of the frame
+        cx = int(width/2)
+        cy = int (height/2)
+        
+        pixel_center_bgr = frame[cx,cy]  # it gives 3 values (in list [b,g,r]) of the environment
+        pixel_center =  hsv_frame[cx,cy] # it gives the H,S,V value at the postion (cx,cy)
+        color = "undefined"
+        hue_value =pixel_center[0]
+
+        if success == True:
+             
+          if hue_value < 5:
+             color = "red"
+          elif hue_value <22:
+             color = "orange"
+    
+          elif hue_value < 33:
+             color = "yellow"
+          elif hue_value < 78:
+             color = "green" 
+          elif hue_value < 131:
+             color = "blue"
+          elif hue_value < 170:
+             color = "violet"
+          else:
+             color = "red"
+        else:
+           cv2.putText(frame,"nocolor",(10,70),0,1,(255,255,255),2)
+        
+        cv2.putText(frame,color,(10,50),0,1,(int(pixel_center_bgr[0]),int (pixel_center_bgr[1]),int(pixel_center_bgr[2])),2)
+        cv2.circle(frame,(cx,cy),5,(255,0,0),3)
+        cv2.imshow("img",frame)
+        if cv2.waitKey(1) & 0xff == ord('q'):
+          break
+
+cv2.release()
+
