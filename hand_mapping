@@ -1,0 +1,51 @@
+import cv2
+import mediapipe as mp
+cap = cv2.VideoCapture(0)
+
+
+mphands = mp.solutions.hands
+
+hands = mphands.Hands()
+
+
+draw = mp.solutions.drawing_utils
+
+while True:
+  x1 =[]
+  y1 =[]
+  x2 =[]
+  y2 =[]
+
+  success,image = cap.read()
+  convimg = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
+
+ 
+  result = hands.process(convimg)
+  if result.multi_hand_landmarks:
+      for things in result.multi_hand_landmarks:
+          draw.draw_landmarks(image,things,mphands.HAND_CONNECTIONS)
+          for id, lm in enumerate(things.landmark) :
+              h,w,c = image.shape
+              cx,cy = int(lm.x*w) , int(lm.y*h)
+              
+
+              if id == 4 :
+                 cv2.circle(image,(cx,cy),15,(255,0,0),cv2.FILLED)
+                 x1.append(cx)
+                 y1.append(cy)
+                # print(x1[0],y1[0])
+              if id == 8 :
+                cv2.circle(image,(cx,cy),15,(0,0,255),cv2.FILLED)
+                x2.append(cx)
+                y2.append(cy)
+              #  if  (x1[0]-x2[0]) < 6 :
+               #   cv2.circle(image,(cx,cy),15,(0,255,0),cv2.FILLED)
+              #to draw a line form id = 4 to id = 
+                cv2.line(image,(x1[0],y1[0]),(x2[0],y2[0]),(255,0,255),5)
+               # cv2.circle(image,( (x1[0]+x2[0])/2,(y1[0]+y2[0])/2),2,(0,255,155),cv2.FILLED)
+
+              #print(x1,y1)
+            
+  cv2.imshow("image",image)
+  if  cv2.waitKey(20) & 0xff == ord('q'):
+        break
